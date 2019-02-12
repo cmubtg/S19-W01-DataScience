@@ -1,0 +1,89 @@
+---
+title: "W01: Introduction to Data Science"
+author: "Business Technology Group"
+date: "February 11th, 2019"
+output: 
+  html_document:
+    toc:  true
+    toc_float:  true
+    code_folding:  show
+---
+
+
+##  House Sales in King County, USA
+
+***
+***
+
+#  Setup
+
+```{r, warning = FALSE, message = FALSE}
+library(ggplot2)
+library(gridExtra)
+
+df <- read.csv("kc_house_data.csv", header=TRUE)
+```
+
+#  Exploratory Data Analysis
+
+```{r, warning = FALSE, message = FALSE, fig.height = 5, fig.width = 10}
+box <- ggplot(data = df, aes(x = factor(1), y = sqft_living)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of Home Square Footage",
+           y = "Square Footage of Home") + 
+  theme(axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+         axis.text.x = element_blank())
+
+histo <- ggplot(data = df, aes(x = sqft_living)) +
+  geom_histogram() +
+  labs(title = "Histogram of Home Square Footage",
+       x = "Square Footage of Home",
+       y = "Frequency")
+
+grid.arrange(box, histo, ncol = 2)
+```
+
+```{r, warning = FALSE, message = FALSE, fig.height = 5, fig.width = 10}
+box <- ggplot(data = df, aes(x = factor(1), y = price)) +
+  geom_boxplot() +
+  labs(title = "Boxplot of House Prices",
+           y = "Price of Home") + 
+  theme(axis.title.x = element_blank(),
+        axis.ticks.x = element_blank(),
+         axis.text.x = element_blank())
+
+histo <- ggplot(data = df, aes(x = price)) +
+  geom_histogram() +
+  labs(title = "Histogram of House Prices",
+       x = "Price of Home",
+       y = "Frequency")
+
+grid.arrange(box, histo, ncol = 2)
+```
+
+```{r}
+scatter <- ggplot(data = df, aes(x = sqft_living, y = price)) +
+  geom_point() +
+  xlab("Square Footage of Home") +
+  ylab("Price of Home") +
+  ggtitle("Square Footage vs. Price")
+
+scatter
+```
+
+#  Modeling
+
+```{r}
+model <- lm(price ~ sqft_living, data=df)
+coef_b0 <- summary(model)$coefficients[1]
+coef_b1 <- summary(model)$coefficients[2]
+
+summary(model)
+```
+
+```{r}
+scatter + geom_abline(intercept = coef_b0,
+                          slope = coef_b1,
+                         colour = 'green')
+```
